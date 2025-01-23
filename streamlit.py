@@ -1,125 +1,85 @@
 # Import the required packages
-
 import streamlit as st
 import pandas as pd
 import altair as alt
-#import seaborn as sns
 
 # Page configuration
 st.set_page_config(
     page_title="Iris Classification", 
-    page_icon="assets/icon/icon.png",
+    page_icon="🌸",
     layout="wide",
-    initial_sidebar_state="expanded")
+    initial_sidebar_state="expanded"
+)
 
 alt.themes.enable("dark")
 
 # -------------------------
-# Sidebar
-
-# Initialize page_selection in session state if not already set
-if 'page_selection' not in st.session_state:
-    st.session_state.page_selection = 'about'  # Default page
-
-# Function to update page_selection
-def set_page_selection(page):
-    st.session_state.page_selection = page
-
+# Sidebar navigation
 with st.sidebar:
-
     st.title('Iris Classification')
-
-    # Page Button Navigation
     st.subheader("Pages")
 
-    if st.button("About", use_container_width=True, on_click=set_page_selection, args=('about',)):
-        st.session_state.page_selection = 'about'
-	st.write("Cette application explore les données des Iris, met en œuvre des modèles d'apprentissage automatique et visualise les résultats.") 
-    
-    if st.button("Dataset", use_container_width=True, on_click=set_page_selection, args=('dataset',)):
-        st.session_state.page_selection = 'dataset'
+    # Page navigation buttons
+    pages = {
+        "About": "about",
+        "Dataset": "dataset",
+        "EDA": "eda",
+        "Data Cleaning / Pre-processing": "data_cleaning",
+        "Machine Learning": "machine_learning",
+        "Prediction": "prediction",
+        "Conclusion": "conclusion",
+    }
 
-    if st.button("EDA", use_container_width=True, on_click=set_page_selection, args=('eda',)):
-        st.session_state.page_selection = "eda"
+    # Save the selected page in the session state
+    selected_page = st.radio("Navigate to:", list(pages.keys()))
+    st.session_state.page_selection = pages[selected_page]
 
-    if st.button("Data Cleaning / Pre-processing", use_container_width=True, on_click=set_page_selection, args=('data_cleaning',)):
-        st.session_state.page_selection = "data_cleaning"
-
-    if st.button("Machine Learning", use_container_width=True, on_click=set_page_selection, args=('machine_learning',)): 
-        st.session_state.page_selection = "machine_learning"
-
-    if st.button("Prediction", use_container_width=True, on_click=set_page_selection, args=('prediction',)): 
-        st.session_state.page_selection = "prediction"
-
-    if st.button("Conclusion", use_container_width=True, on_click=set_page_selection, args=('conclusion',)):
-        st.session_state.page_selection = "conclusion"
-
-    # Project Details
+    # Abstract and project details
     st.subheader("Abstract")
-    st.markdown("A Streamlit dashboard highlighting the results of a training two classification models using the Iris flower dataset from Kaggle.")
+    st.markdown("A Streamlit dashboard highlighting the results of training two classification models using the Iris flower dataset from Kaggle.")
     st.markdown("📊 [Dataset](https://www.kaggle.com/datasets/arshid/iris-flower-dataset)")
     st.markdown("📗 [Google Colab Notebook](https://colab.research.google.com/drive/1KJDBrx3akSPUW42Kbeepj64ZisHFD-NV?usp=sharing)")
     st.markdown("🐙 [GitHub Repository](https://github.com/Zeraphim/Streamlit-Iris-Classification-Dashboard)")
     st.markdown("by: [`Zeraphim`](https://jcdiamante.com)")
 
 # -------------------------
+# Page content logic
+def load_data():
+    """Function to load the Iris dataset."""
+    return pd.read_csv('iris.csv', delimiter=',')
 
-# Load data
-df = pd.read_csv('iris.csv', delimiter=',')
+def render_about():
+    st.title("About the Iris Classification App")
+    st.write("Cette application explore les données des Iris, met en œuvre des modèles d'apprentissage automatique et visualise les résultats.")
+    st.write("Elle inclut une analyse exploratoire, un pré-traitement des données, et des prédictions basées sur des modèles de classification.")
+    st.markdown("**Construit avec :** Streamlit, Pandas, Altair")
+    st.markdown("**Auteur :** Stéphane C. K. Tékouabou")
 
-# Set page title
-st.title('ISJM BI - Exploration des données des Iris')
+def render_dataset(df):
+    st.title("Dataset Overview")
+    st.write(df.head())
+    st.write("Shape of the dataset:", df.shape)
 
-st.header('Pré-analyse visuelles données données des Iris TP1')  # On définit l'en-tête d'une section
+def render_eda(df):
+    st.title("Exploratory Data Analysis (EDA)")
+    chart = alt.Chart(df).mark_point().encode(
+        x='petal_length',
+        y='petal_width',
+        color='species'
+    )
+    st.altair_chart(chart, use_container_width=True)
 
+# Mapping page names to their respective functions
+page_functions = {
+    "about": render_about,
+    "dataset": lambda: render_dataset(load_data()),
+    "eda": lambda: render_eda(load_data()),
+    # Add other pages here...
+}
 
-# Afficher les premières lignes des données chargées data
-#st.write(df.head())
-	
-st.subheader('Description des données')  # Sets a subheader for a subsection
-
-# Show Dataset
-if st.checkbox("Boutons de prévisualisation du DataFrame"):
-	if st.button("Head"):
-		st.write(df.head(2))
-	if st.button("Tail"):
-		st.write(df.tail())
-	if st.button("Infos"):
-		st.write(df.info())
-	if st.button("Shape"):
-		st.write(df.shape)
-	else:
-		st.write(df.head(2))
-
-
-# Create chart
-chart = alt.Chart(df).mark_point().encode(
-    x='petal_length',
-    y='petal_width',
-    color="species"
-)
-
-# Display chart
-st.write(chart)
-
-#Interactive design representation 
-chart2 = alt.Chart(df).mark_circle(size=60).encode(
-    x='sepal_length',
-    y='sepal_width',
-    color='species',
-    tooltip=['sepal_length', 'sepal_width', 'petal_length', 'petal_width']
-).interactive()
-
-st.write(chart2)
-
-
-# About
-
-if st.button("About App"):
-	st.subheader("App d'exploration des données des Iris")
-	st.text("Contruite avec Streamlit")
-	st.text("Thanks to the Streamlit Team Amazing Work")
-
-if st.checkbox("By"):
-	st.text("Stéphane C. K. Tékouabou")
-	st.text("ctekouaboukoumetio@gmail.com")
+# Display the content for the selected page
+page = st.session_state.page_selection
+if page in page_functions:
+    page_functions[page]()
+else:
+    st.write("Page not found.")
