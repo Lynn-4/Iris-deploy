@@ -64,7 +64,7 @@ with st.sidebar:
 # -------------------------
 
 # Load data
-df = pd.read_csv('iris.csv', delimiter=',')
+df = pd.read_csv('iris.csv', delimiter=';')
 
 # Set page title
 st.title('ISJM BI - Exploration des données des Iris')
