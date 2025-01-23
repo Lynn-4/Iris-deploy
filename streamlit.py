@@ -34,6 +34,7 @@ with st.sidebar:
 
     if st.button("About", use_container_width=True, on_click=set_page_selection, args=('about',)):
         st.session_state.page_selection = 'about'
+	    st.write("Cette application explore les données des Iris, met en œuvre des modèles d'apprentissage automatique et visualise les résultats.") 
     
     if st.button("Dataset", use_container_width=True, on_click=set_page_selection, args=('dataset',)):
         st.session_state.page_selection = 'dataset'
