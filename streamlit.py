@@ -1,4 +1,5 @@
 # Import the required packages
+
 import streamlit as st
 import pandas as pd
 import altair as alt
@@ -6,7 +7,7 @@ import altair as alt
 # Page configuration
 st.set_page_config(
     page_title="Iris Classification", 
-    page_icon="🌸",
+    page_icon="assets/icon/icon.png",
     layout="wide",
     initial_sidebar_state="expanded"
 )
@@ -48,8 +49,10 @@ def load_data():
     """Function to load the Iris dataset."""
     return pd.read_csv('iris.csv', delimiter=',')
 
-def render_about():
-    st.title("About the Iris Classification App")
+def render_about(): 
+    st.title('ISJM BI - Exploration des données des Iris') 
+    st.header('Pré-analyse visuelles données données des Iris TP1')
+    st.subheader('Description des données') 
     st.write("Cette application explore les données des Iris, met en œuvre des modèles d'apprentissage automatique et visualise les résultats.")
     st.write("Elle inclut une analyse exploratoire, un pré-traitement des données, et des prédictions basées sur des modèles de classification.")
     st.markdown("**Construit avec :** Streamlit, Pandas, Altair")
