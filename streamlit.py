@@ -85,13 +85,25 @@ def render_eda(df):
     if not required_columns.issubset(df.columns):
         st.error(f"Le fichier de données doit contenir les colonnes suivantes : {required_columns}")
         return
-    chart = alt.Chart(df).mark_point().encode(
+     # Premier graphique : petal_length vs petal_width
+    st.subheader("Relation entre la longueur et la largeur des pétales")
+    chart1 = alt.Chart(df).mark_point().encode(
         x="petal_length",
         y="petal_width",
-        color="species"
-    )
-    st.altair_chart(chart, use_container_width=True)
+        color="species",
+        tooltip=["petal_length", "petal_width", "species"]
+    ).interactive()
+    st.altair_chart(chart1, use_container_width=True)
 
+    # Deuxième graphique : sepal_length vs sepal_width
+    st.subheader("Relation entre la longueur et la largeur des sépales")
+    chart2 = alt.Chart(df).mark_circle(size=60).encode(
+        x="sepal_length",
+        y="sepal_width",
+        color="species",
+        tooltip=["sepal_length", "sepal_width", "petal_length", "petal_width"]
+    ).interactive()
+    st.altair_chart(chart2, use_container_width=True) 
 def not_implemented():
     """Displays a placeholder for pages under development."""
     st.title("Page en cours de développement")
