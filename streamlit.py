@@ -12,7 +12,10 @@ st.set_page_config(
     initial_sidebar_state="expanded"
 )
 
-alt.themes.enable("dark")
+alt.themes.enable("dark") 
+# Ensure session state is initialized
+if "page_selection" not in st.session_state:
+    st.session_state.page_selection = "about"
 
 # -------------------------
 # Sidebar navigation
@@ -51,7 +54,6 @@ def load_data():
 
 def render_about(): 
     st.title('ISJM BI - Exploration des données des Iris') 
-    st.header('Pré-analyse visuelles données données des Iris TP1')
     st.subheader('Description des données') 
     st.write("Cette application explore les données des Iris, met en œuvre des modèles d'apprentissage automatique et visualise les résultats.")
     st.write("Elle inclut une analyse exploratoire, un pré-traitement des données, et des prédictions basées sur des modèles de classification.")
@@ -60,11 +62,14 @@ def render_about():
 
 def render_dataset(df):
     st.title("Dataset Overview")
-    st.write(df.head())
-    st.write("Shape of the dataset:", df.shape)
+     if df.empty:
+        st.error("Aucune donnée à afficher. Veuillez vérifier le fichier iris.csv.")
+    else:
+        st.write(df.head())
+        st.write("Shape of the dataset:", df.shape) 
 
 def render_eda(df):
-    st.title("Exploratory Data Analysis (EDA)")
+    st.title("Exploratory Data Analysis (EDA)") 
     chart = alt.Chart(df).mark_point().encode(
         x='petal_length',
         y='petal_width',
@@ -77,6 +82,10 @@ page_functions = {
     "about": render_about,
     "dataset": lambda: render_dataset(load_data()),
     "eda": lambda: render_eda(load_data()),
+    "data_cleaning": not_implemented,
+    "machine_learning": not_implemented,
+    "prediction": not_implemented,
+    "conclusion": not_implemented,
     # Add other pages here...
 }
 
