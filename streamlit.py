@@ -75,7 +75,7 @@ def render_dataset(df):
     if df.empty:
         st.error("Aucune donnée à afficher. Veuillez vérifier le fichier iris.csv.")
     else:
-        st.write(df.head())
+        st.write df
         st.write("Shape of the dataset:", df.shape)
 
 def render_eda(df):
