@@ -1,18 +1,22 @@
 # Import the required packages
-
 import streamlit as st
 import pandas as pd
 import altair as alt
 
 # Page configuration
 st.set_page_config(
-    page_title="Iris Classification", 
-    page_icon="assets/icon/icon.png",
+    page_title="Iris Classification",
+    page_icon="assets/icon/icon.png",  # Assurez-vous que ce chemin est correct
     layout="wide",
     initial_sidebar_state="expanded"
 )
 
-alt.themes.enable("dark") 
+# Enable Altair dark theme with error handling
+try:
+    alt.themes.enable("dark")
+except Exception as e:
+    st.warning(f"Le thème 'dark' n'a pas pu être activé : {e}")
+
 # Ensure session state is initialized
 if "page_selection" not in st.session_state:
     st.session_state.page_selection = "about"
@@ -20,7 +24,7 @@ if "page_selection" not in st.session_state:
 # -------------------------
 # Sidebar navigation
 with st.sidebar:
-    st.title('Iris Classification')
+    st.title("Iris Classification")
     st.subheader("Pages")
 
     # Page navigation buttons
@@ -50,32 +54,48 @@ with st.sidebar:
 # Page content logic
 def load_data():
     """Function to load the Iris dataset."""
-    return pd.read_csv('iris.csv', delimiter=',')
+    try:
+        return pd.read_csv("iris.csv", delimiter=",")
+    except FileNotFoundError:
+        st.error("Le fichier 'iris.csv' est introuvable. Assurez-vous qu'il est dans le bon répertoire.")
+        return pd.DataFrame()  # Return an empty DataFrame if the file is missing
 
-def render_about(): 
-    st.title('ISJM BI - Exploration des données des Iris') 
-    st.subheader('Description des données') 
+def render_about():
+    """Renders the About page."""
+    st.title("ISJM BI - Exploration des données des Iris")
+    st.subheader("Description des données")
     st.write("Cette application explore les données des Iris, met en œuvre des modèles d'apprentissage automatique et visualise les résultats.")
     st.write("Elle inclut une analyse exploratoire, un pré-traitement des données, et des prédictions basées sur des modèles de classification.")
     st.markdown("**Construit avec :** Streamlit, Pandas, Altair")
     st.markdown("**Auteur :** Stéphane C. K. Tékouabou")
 
 def render_dataset(df):
-    st.title("Dataset Overview") 
-    if df.empty: 
+    """Renders the Dataset page."""
+    st.title("Dataset Overview")
+    if df.empty:
         st.error("Aucune donnée à afficher. Veuillez vérifier le fichier iris.csv.")
     else:
         st.write(df.head())
-        st.write("Shape of the dataset:", df.shape) 
+        st.write("Shape of the dataset:", df.shape)
 
 def render_eda(df):
-    st.title("Exploratory Data Analysis (EDA)") 
+    """Renders the EDA page."""
+    st.title("Exploratory Data Analysis (EDA)")
+    required_columns = {"petal_length", "petal_width", "species"}
+    if not required_columns.issubset(df.columns):
+        st.error(f"Le fichier de données doit contenir les colonnes suivantes : {required_columns}")
+        return
     chart = alt.Chart(df).mark_point().encode(
-        x='petal_length',
-        y='petal_width',
-        color='species'
+        x="petal_length",
+        y="petal_width",
+        color="species"
     )
     st.altair_chart(chart, use_container_width=True)
+
+def not_implemented():
+    """Displays a placeholder for pages under development."""
+    st.title("Page en cours de développement")
+    st.write("Cette fonctionnalité sera bientôt disponible.")
 
 # Mapping page names to their respective functions
 page_functions = {
@@ -86,7 +106,6 @@ page_functions = {
     "machine_learning": not_implemented,
     "prediction": not_implemented,
     "conclusion": not_implemented,
-    # Add other pages here...
 }
 
 # Display the content for the selected page
@@ -94,4 +113,4 @@ page = st.session_state.page_selection
 if page in page_functions:
     page_functions[page]()
 else:
-    st.write("Page not found.")
+    st.error("Page introuvable.")
