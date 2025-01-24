@@ -81,11 +81,14 @@ def render_dataset(df):
 def render_eda(df):
     """Renders the EDA page."""
     st.title("Exploratory Data Analysis (EDA)")
-    required_columns = {"petal_length", "petal_width", "species"}
+
+    # Vérifier si les colonnes nécessaires sont présentes
+    required_columns = {"petal_length", "petal_width", "sepal_length", "sepal_width", "species"}
     if not required_columns.issubset(df.columns):
         st.error(f"Le fichier de données doit contenir les colonnes suivantes : {required_columns}")
         return
-     # Premier graphique : petal_length vs petal_width
+
+    # Premier graphique : petal_length vs petal_width
     st.subheader("Relation entre la longueur et la largeur des pétales")
     chart1 = alt.Chart(df).mark_point().encode(
         x="petal_length",
@@ -103,7 +106,41 @@ def render_eda(df):
         color="species",
         tooltip=["sepal_length", "sepal_width", "petal_length", "petal_width"]
     ).interactive()
-    st.altair_chart(chart2, use_container_width=True) 
+    st.altair_chart(chart2, use_container_width=True)
+
+    # Ajouter un tableau récapitulatif des statistiques descriptives
+    st.subheader("Statistiques descriptives")
+    st.write(df.describe())
+
+    # Histogrammes des distributions avec Altair
+    st.subheader("Histogrammes des caractéristiques")
+    numerical_columns = ["sepal_length", "sepal_width", "petal_length", "petal_width"]
+    for col in numerical_columns:
+        st.write(f"Distribution de la caractéristique : **{col}**")
+        hist_chart = alt.Chart(df).mark_bar().encode(
+            x=alt.X(col, bin=alt.Bin(maxbins=30)),
+            y="count()",
+            color="species"
+        )
+        st.altair_chart(hist_chart, use_container_width=True)
+
+    # Nouveau graphique : distribution de PetalWidth
+    st.subheader("Distribution de la largeur des pétales (PetalWidth)")
+    st.write("Statistiques descriptives pour **PetalWidth** :")
+    st.write(df["petal_width"].describe())
+
+    # Graphique seaborn pour la distribution de PetalWidth
+    import matplotlib.pyplot as plt
+    import seaborn as sns
+
+    plt.figure(figsize=(15, 5))
+    sns.countplot(x="petal_width", data=df)
+    plt.title("Distribution de PetalWidth")
+    
+    # Afficher le graphique dans Streamlit
+    st.pyplot(plt)
+    plt.clf()  # Nettoyer pour éviter des conflits avec d'autres graphiques
+    
 def not_implemented():
     """Displays a placeholder for pages under development."""
     st.title("Page en cours de développement")
