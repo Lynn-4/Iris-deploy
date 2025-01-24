@@ -162,4 +162,4 @@ page = st.session_state.page_selection
 if page in page_functions:
     page_functions[page]()
 else:
-    st.error("Page introuvable.")
+    st.error("Page introuvable.") 
