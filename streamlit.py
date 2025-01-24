@@ -61,8 +61,8 @@ def render_about():
     st.markdown("**Auteur :** Stéphane C. K. Tékouabou")
 
 def render_dataset(df):
-    st.title("Dataset Overview")
-     if df.empty:
+    st.title("Dataset Overview") 
+    if df.empty: 
         st.error("Aucune donnée à afficher. Veuillez vérifier le fichier iris.csv.")
     else:
         st.write(df.head())
